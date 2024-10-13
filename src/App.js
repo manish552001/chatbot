@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, startTransition } from 'react';
+import { useDispatch } from 'react-redux';
+import { receiveMessage } from './redux/chatSlice';
+import ChatWindow from './components/ChatWindow';
+import MessageInput from './components/MessageInput';
+import { Container, Typography } from '@mui/material';
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const simulateIncomingMessage = () => {
+      startTransition(() => {
+        dispatch(receiveMessage({
+          text: 'Hello, this is a mock response!',
+          user: 'Bot',
+          timestamp: new Date().toLocaleTimeString(),
+        }));
+      });
+    };
+
+    const interval = setInterval(simulateIncomingMessage, 3000);
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="sm" sx={{ marginTop: '2rem' }}>
+      <Typography variant="h4" gutterBottom>
+        Chat Application
+      </Typography>
+      {/* ThemeToggle removed */}
+      <ChatWindow />
+      <MessageInput />
+    </Container>
   );
-}
+};
 
 export default App;
